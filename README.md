@@ -42,4 +42,5 @@
 - Документация по Spring Framework: [https://spring.io/docs](https://spring.io/docs)
 
 ##P.S проект в разработке!
+Проект преднозначен для упрощения работы в сфере торговли.
 

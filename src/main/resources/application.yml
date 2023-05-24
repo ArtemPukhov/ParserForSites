@@ -1,0 +1,46 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    username:
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+    url: jdbc:mysql://127.0.0.1:3306/ParserBot?useSSL=false&requireSSL=false&allowPublicKeyRetrieval=true
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        order_inserts: true
+        order_updates: true
+        batch_versioned_data: true
+        jdbc:
+          batch_size: 25
+    hibernate:
+      ddl-auto: update
+      format_sql: true
+    show-sql: true
+
+indexing-settings:
+  sites:
+    - name: "FoxWeld"
+      url: "https://foxweld.ru/"
+      selectPrice: ".price-val > b:nth-child(1)"
+      selectName: "h1"
+      selectSku: ".element-code > span:nth-child(1)"
+      startWith: "https://foxweld.ru/"
+
+    - name: "Svarog-rf"
+      url: "https://svarog-rf.ru/"
+      selectPrice: ".actual > strong:nth-child(2)"
+      selectName: "h1"
+      selectSku: ".num > strong:nth-child(2)"
+      startWith: "https://svarog-rf.ru/"
+
+#    - name: "Grovers"
+#      url: "https://grovers.ru/catalog/"
+#      selectPrice: ".price"
+#      selectName: "h1"
+#      selectSku: ".h1-bl > span:nth-child(2)"
+#      startWith: "https://grovers.ru/catalog/"

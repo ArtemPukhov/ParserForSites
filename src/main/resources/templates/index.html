@@ -1,23 +1,70 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Список сайтов и парсер</title>
-    <style>
-        #siteList {
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-    </style>
-    <script src="/js/main.js"></script>
 
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          max-width: 800px;
+          margin: 0 auto;
+        }
+
+        h1, h2 {
+          text-align: center;
+        }
+
+        #siteList {
+          border: 1px solid #ccc;
+          padding: 10px;
+          margin: 20px auto;
+          max-width: 500px;
+        }
+
+        form {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          max-width: 300px;
+          margin: 0 auto 20px;
+        }
+
+        button {
+          padding: 10px 20px;
+          background: #007bff;
+          color: #fff;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+
+    </style>
+
+    <script src="/js/main.js"></script>
 </head>
+
 <body>
+
 <h1>Список сайтов</h1>
+
 <div id="siteList"></div>
 
 <h2>Управление</h2>
+
+<form action="/parseOneSite" method="POST">
+    <select name="siteIndex">
+        <option value="0">Сайт 1</option>
+        <option value="1">Сайт 2</option>
+        <option value="2">Сайт 3</option>
+        <!-- Добавьте остальные сайты -->
+    </select>
+    <button type="submit">Парсить</button>
+</form>
+
 <button onclick="parseProducts()">Запустить парсер</button>
 <button onclick="startBot()">Запустить бота</button>
+
 </body>
+
 </html>

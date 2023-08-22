@@ -1,12 +1,18 @@
 package ru.dugaweld.parser.services;
 
+import com.google.common.collect.ConcurrentHashMultiset;
+import com.google.common.collect.Multiset;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.dugaweld.parser.config.ProductList;
 import ru.dugaweld.parser.model.Product;
 import ru.dugaweld.parser.model.Site;
 import ru.dugaweld.parser.repository.ProductRepository;
@@ -16,13 +22,16 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.RecursiveAction;
 
 
 @Getter
 @AllArgsConstructor
 public class ParserService extends RecursiveAction {
-    static Set<String> urls1 = new HashSet<>();
+    private static final Logger logger = org.slf4j.LoggerFactory.getLogger(ParserService.class);
+    Multiset<String> urls1 = ProductList.urls1;
+
     List<Product> products = new ArrayList<>();
 
     @Autowired
@@ -46,7 +55,7 @@ public class ParserService extends RecursiveAction {
     }
 
     @Override
-    protected void compute() {
+    public void compute() {
         try {
             try {
                 Thread.sleep(150);
@@ -63,11 +72,13 @@ public class ParserService extends RecursiveAction {
 
 
             for (Element link : links) {
+                try {
+
                 String linkUrl = link.absUrl("href");
                 if (linkUrl.startsWith(startWith) &&
+                        !linkUrl.contains("?print") &&
                         !urls1.contains(linkUrl) &&
                         !linkUrl.contains("#") &&
-                        !urls1.contains(linkUrl) &&
                         !linkUrl.endsWith("jpg") &&
                         !linkUrl.endsWith("png") &&
                         !linkUrl.endsWith("jpeg") &&
@@ -83,10 +94,10 @@ public class ParserService extends RecursiveAction {
                         Elements discriptionElements = docPrice.select("div.field:nth-child(4)");
                         if (!(priceElements.size() == 0)) {
                             price = priceElements.get(0).text().replaceAll("[^0-9]", "");
-                            if(!(skuElements.size() == 0)) {
+                            if (!(skuElements.size() == 0)) {
                                 sku = skuElements.get(0).text().replaceAll("[^0-9]", "");
                             }
-                            if(!(h1Elements.size() == 0)) {
+                            if (!(h1Elements.size() == 0)) {
                                 h1 = h1Elements.get(0).text();
                             }
                             Product product = new Product(linkUrl, price, sku, h1, site);
@@ -102,7 +113,7 @@ public class ParserService extends RecursiveAction {
 
                         }
                     }
-                    if(urls1.contains(linkUrl)) {
+                    if (urls1.contains(linkUrl)) {
                         continue;
                     }
                     urls1.add(linkUrl);
@@ -111,9 +122,16 @@ public class ParserService extends RecursiveAction {
                     tasks.add(task);
 
                 }
+                }catch (HttpStatusException e) {
+                    if (e.getStatusCode() == 404) {
+                        logger.error("Страница не найдена: {}", url);
+                        continue;
+                    }
+                }
             }
             // Start all forked tasks
             invokeAll(tasks);
+
         } catch (Exception e) {
             e.printStackTrace();
         }

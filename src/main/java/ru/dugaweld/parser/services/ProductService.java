@@ -29,6 +29,13 @@ public class ProductService {
         }
 
     }
+
+    public void parseOneSite (String site) {
+        Site site1 = new Site();
+        site1.setUrl(site);
+    ParserService parserService = new ParserService(site1);
+    parserService.invoke();
+    }
     public List<Product> searchProduct(String query) {
         return productRepository.findByNameContaining(query);
     }

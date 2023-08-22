@@ -10,6 +10,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+
 public class Site {
 
     @Id
@@ -23,4 +24,5 @@ public class Site {
     private String selectName;
     private String selectSku;
     private String startWith;
+
 }
